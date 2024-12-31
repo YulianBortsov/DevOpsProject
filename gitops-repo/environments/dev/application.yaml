@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-my-app
+  namespace: argocd
+spec:
+  project: default
+  sources:
+   - repoURL: https://github.com/your-org/DevopsProj.repo
+     targetRevision: main
+     path: app-repo
+     helm:
+       valueFiles:
+         - $values/environments/dev/values.yaml
+   - repoURL: https://github.com/your-org/DevopProj.repo
+     targetRevision: main
+     path: gitops-repo
+     ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-my-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+        - CreateNamespace=true
+
+    

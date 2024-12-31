@@ -1,0 +1,9 @@
+frontend: 
+  image:
+    tag: alpine
+backend:
+  image:
+    repository: yulianbortsov/3tier-back
+    tag: latest
+
+env: dev

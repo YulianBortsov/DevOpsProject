@@ -1,0 +1,89 @@
+# Default values for 3tier-app.
+
+env: dev
+frontend:
+  image:
+    repository: nginx
+    tag: alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: True
+    host: app.ybort.shop
+  staticcmName: frontend-static-files
+  volumes:
+    - name: frontend-static-files
+      configMap:
+        name: frontend-static-files
+  volumeMounts:
+    - name: frontend-static-files
+      mountPath: /usr/share/nginx/html
+
+
+
+backend:
+  image:
+    repository: yulianbortsov/3tier-back
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 2
+  service:
+    type: ClusterIP
+    port: 5000
+  env:
+    DATABASE_USER: user
+    DATABASE_NAME: app_db
+  livenessProbe:
+    httpGet:
+      path: /api
+      port: 5000
+    initialDelaySeconds: 7
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    httpGet:
+      path: /api
+      port: 5000
+    initialDelaySeconds: 7
+    periodSeconds: 10
+  appcmName: app-cm-backend
+  requirementscmName: requirements-cm-backend
+  volumes:
+    - name: app-cm-backend
+      configMap:
+        name: app-cm-backend
+    - name: requirements-cm-backend
+      configMap:
+        name: requirements-cm-backend
+  volumeMounts:
+    - name: app-cm-backend
+      mountPath: /app/app.py
+      subPath: app.py
+    - name: requirements-cm-backend
+      mountPath: /app/requirements.txt
+      subPath: requirements.txt
+
+global:
+  defaultStorageClass: gp2  
+
+postgresql:
+  auth:
+    username: user
+    database: app_db
+    existingSecret: postgres-pass
+    secretKeys:
+      userPasswordKey: db-pass
+      adminPasswordKey: db-admin-pass
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+
+secretStore:
+  remoteRefKey: 3tier/postgresql
+  remoteRefProperty: 3tier-app-postgres-pass
+  remoteRefPropertyAdmin: 3tier-app-postgres-admin-pass
+  region: us-east-1  

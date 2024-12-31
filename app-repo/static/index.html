@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to My 3-Tier Web App</h1>
+    <p>This is served from the NGINX frontend.</p>
+
+    <h2>Create Item</h2>
+    <form id="createItemForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description">
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Edit Item</h2>
+    <form id="editItemForm" style="display:none;">
+        <input type="hidden" id="editItemId">
+        <label for="editName">Name:</label>
+        <input type="text" id="editName" name="editName" required>
+        <label for="editDescription">Description:</label>
+        <input type="text" id="editDescription" name="editDescription">
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <h2>Items List</h2>
+    <button onclick="loadItems()">Load Items</button>
+    <ul id="itemsList"></ul>
+
+    <script src="script.js"></script>
+</body>
+</html>

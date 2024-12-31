@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.env }}-{{ .Release.Name }}-backend
+  labels:
+    app: {{ .Values.env }}-{{ .Release.Name }}-backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.env }}-{{ .Release.Name }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.env }}-{{ .Release.Name }}-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}  
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            {{- toYaml .Values.backend.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.backend.readinessProbe | nindent 12 }}
+          env:
+            - name: DATABASE_HOST
+              value: {{ .Release.Name }}-postgresql
+            - name: DATABASE_USER
+              value: {{ .Values.backend.env.DATABASE_USER | quote }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+            - name: DATABASE_NAME
+              value: {{ .Values.backend.env.DATABASE_NAME | quote }}
