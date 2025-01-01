@@ -8,6 +8,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+# test the CI/CD pipeline
+test = "test"
+
 # Database configuration from environment variables
 DB_HOST = os.getenv('DATABASE_HOST', 'web-app-application-postgresql')
 DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
