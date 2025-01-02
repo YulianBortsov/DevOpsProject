@@ -1,4 +1,4 @@
-name: Build new backend image and Deploy
+name: Build new frontend image and Deploy
 
 on:
   push:
