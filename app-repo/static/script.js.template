@@ -1,6 +1,6 @@
 console.log('Static content served successfully!');
 
-const apiUrl = '${API_URL}';
+
 
 document.getElementById('createItemForm').addEventListener('submit', async (event) => {
     event.preventDefault();
