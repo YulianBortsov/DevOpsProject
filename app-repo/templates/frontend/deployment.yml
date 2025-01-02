@@ -23,7 +23,4 @@ spec:
           env:
             - name: API_URL
               value: {{ .Values.frontend.ingress.host }}
-      #     volumeMounts:
-      #       {{- toYaml .Values.frontend.volumeMounts | nindent 12 }}
-      # volumes:
-      #   {{- toYaml .Values.frontend.volumes | nindent 8 }}
+
