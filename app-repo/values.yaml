@@ -4,7 +4,7 @@ env: dev
 frontend:
   image:
     repository: nginx
-    tag: alpine
+    frontTag: alpine
     pullPolicy: IfNotPresent
   replicaCount: 1
   service:
@@ -27,7 +27,7 @@ frontend:
 backend:
   image:
     repository: yulianbortsov/3tier-back
-    tag: latest
+    backTag: latest
     pullPolicy: IfNotPresent
   replicaCount: 2
   service:

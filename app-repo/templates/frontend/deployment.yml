@@ -13,16 +13,17 @@ spec:
     metadata:
       labels:
         app: {{ .Values.env }}-{{ .Release.Name }}-frontend
-      annotations:
-        checksum/configmap: {{ include (print $.Template.BasePath "/frontend/configmap.yml") . | sha256sum }}
     spec:
       containers:
         - name: frontend
-          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.frontTag }}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
             - containerPort: 80
-          volumeMounts:
-            {{- toYaml .Values.frontend.volumeMounts | nindent 12 }}
-      volumes:
-        {{- toYaml .Values.frontend.volumes | nindent 8 }}
+          env:
+            - name: API_URL
+              value: {{ .Values.frontend.ingress.host }}
+      #     volumeMounts:
+      #       {{- toYaml .Values.frontend.volumeMounts | nindent 12 }}
+      # volumes:
+      #   {{- toYaml .Values.frontend.volumes | nindent 8 }}

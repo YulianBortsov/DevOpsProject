@@ -1,7 +1,6 @@
 console.log('Static content served successfully!');
 
-const backendServiceHost = "{{ .Release.Name }}-backend";
-const backendPort = "{{ .Values.backend.service.port }}";
+const apiUrl = process.env.API_URL;
 
 document.getElementById('createItemForm').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -9,7 +8,7 @@ document.getElementById('createItemForm').addEventListener('submit', async (even
     const description = document.getElementById('description').value;
 
     try {
-        const response = await fetch('http://${backendServiceHost}:${backendPort}/api/items', {
+        const response = await fetch(`https://${apiUrl}/api/items`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, description }),
@@ -26,7 +25,7 @@ document.getElementById('createItemForm').addEventListener('submit', async (even
 
 async function loadItems() {
     try {
-        const response = await fetch('http://${backendServiceHost}:${backendPort}/api/items');
+        const response = await fetch(`https://${apiUrl}/api/items`);
         const items = await response.json();
 
         const itemsList = document.getElementById('itemsList');
@@ -60,7 +59,7 @@ document.getElementById('editItemForm').addEventListener('submit', async (event)
     const description = document.getElementById('editDescription').value;
 
     try {
-        const response = await fetch(`http://${backendServiceHost}:${backendPort}/api/items/${id}`, {
+        const response = await fetch(`https://${apiUrl}/api/items/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, description }),
@@ -80,7 +79,7 @@ async function deleteItem(id) {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-        const response = await fetch(`http://${backendServiceHost}:${backendPort}/api/items/${id}`, {
+        const response = await fetch(`https://${apiUrl}/api/items/${id}`, {
             method: 'DELETE',
         });
 

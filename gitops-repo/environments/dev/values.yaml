@@ -1,7 +1,10 @@
-
+frontend:
+  image:
+    repository: yulianbortsov/3tier-front
+    frontTag: latest
 backend:
   image:
     repository: yulianbortsov/3tier-back
-    tag: 9117048aef38758330937465c2a1ca0e653c61f5
+    backTag: 9117048aef38758330937465c2a1ca0e653c61f5
 
 env: dev

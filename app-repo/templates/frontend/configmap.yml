@@ -3,7 +3,8 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.frontend.staticcmName }}
   annotations:
-    checksum/configmap: {{ include (print $.Template.BasePath "/frontend/configmap.yml") . | sha256sum }}
+    checksum/configmap: |
+      
 data:
   index.html: |
 {{ .Files.Get "static/index.html" | nindent 4 }}
