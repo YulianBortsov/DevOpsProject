@@ -25,7 +25,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
       - name: Change values file in gitops repo
         run: |
-          sed -i "s/tag: .*/tag: ${{ github.sha }}/" ./gitops-repo/environments/dev/values.yaml
+          sed -i "s/backTag: .*/backTag: ${{ github.sha }}/" ./gitops-repo/environments/dev/values.yaml
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
