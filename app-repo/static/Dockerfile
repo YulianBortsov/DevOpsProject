@@ -4,4 +4,4 @@ COPY styles.css /usr/share/nginx/html
 COPY script.js.template /usr/share/nginx/html
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

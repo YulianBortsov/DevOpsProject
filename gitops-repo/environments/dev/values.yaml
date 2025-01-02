@@ -1,7 +1,7 @@
 frontend:
   image:
     repository: yulianbortsov/3tier-front
-    frontTag: 0.3
+    frontTag: 0.4
 backend:
   image:
     repository: yulianbortsov/3tier-back
