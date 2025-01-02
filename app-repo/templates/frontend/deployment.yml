@@ -14,7 +14,7 @@ spec:
       labels:
         app: {{ .Values.env }}-{{ .Release.Name }}-frontend
       annotations:
-        checksum/configmap: {{ include (print $.Template.BasePath "/templates/frontend/configmap.yml") . | sha256sum }}
+        checksum/configmap: {{ include (print $.Template.BasePath "/frontend/configmap.yml") . | sha256sum }}
     spec:
       containers:
         - name: frontend
