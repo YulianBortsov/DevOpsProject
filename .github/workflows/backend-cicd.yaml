@@ -8,6 +8,12 @@ on:
       - production
     paths:
       - 'app-repo/code/app.py'
+
+  workflow_run:
+    workflows: ["Build new frontend image and Deploy"]
+    types:
+      - completed
+
 jobs:
   build:
     runs-on: ubuntu-latest
