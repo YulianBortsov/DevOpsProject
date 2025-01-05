@@ -7,6 +7,15 @@ document.getElementById('createItemForm').addEventListener('submit', async (even
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value;
 
+    // Frontend Validation: Check if the name is provided
+    if (!name.trim()) {
+        document.getElementById('errorMessage').innerText = 'Name is required!';
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+    } else {
+        document.getElementById('errorMessage').style.display = 'none';
+    }
+
     try {
         const response = await fetch(`https://${API_URL}/api/items`, {
             method: 'POST',
