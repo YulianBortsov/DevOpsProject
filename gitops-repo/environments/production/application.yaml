@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prod-my-app
+  namespace: argocd
+spec:
+  project: default
+  sources:
+   - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
+     targetRevision: production
+     path: app-repo
+     helm:
+       valueFiles:
+         - $values/gitops-repo/environments/production/values.yaml
+   - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
+     targetRevision: main
+     path: gitops-repo
+     ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod-my-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+        - CreateNamespace=true
+
+    

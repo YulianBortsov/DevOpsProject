@@ -2,6 +2,10 @@ name: Build new backend image and Deploy
 
 on:
   push:
+    branches:
+      - dev
+      - staging
+      - production
     paths:
       - 'app-repo/code/app.py'
 jobs:
@@ -10,6 +14,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Get branch name
+        id: branch-name
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Log in to Docker Hub
@@ -19,19 +26,22 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and Tag
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }} -f ./app-repo/code/Dockerfile ./app-repo/code
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }} \
+          -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest \
+          -f ./app-repo/code/Dockerfile ./app-repo/code
       - name: Push Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest
       - name: Change values file in gitops repo
         run: |
-          sed -i "s/backTag: .*/backTag: ${{ github.sha }}/" ./gitops-repo/environments/dev/values.yaml
+          sed -i "s/backTag: .*/backTag: ${{ github.sha }}/" ./gitops-repo/environments/${{ steps.branch-name.outputs.BRANCH_NAME }}/values.yaml
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add ./gitops-repo/environments/dev/values.yaml
-          git commit -m "Update backend image tag to ${{ github.sha }}"
+          git add ./gitops-repo/environments/${{ steps.branch-name.outputs.BRANCH_NAME }}/values.yaml
+          git commit -m "Update backend image tag to ${{ github.sha }} for ${{ steps.branch-name.outputs.BRANCH_NAME }} environment"
           git push

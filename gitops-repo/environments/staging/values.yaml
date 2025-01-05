@@ -1,0 +1,10 @@
+frontend:
+  image:
+    repository: yulianbortsov/3tier-front
+    frontTag: 780462bacaa8b02abf1334102b348e225278056b
+backend:
+  image:
+    repository: yulianbortsov/3tier-back
+    backTag: 2555b2be2752467b296953748b0c25b7511b3a79
+
+env: staging

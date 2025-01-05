@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: staging-my-app
+  namespace: argocd
+spec:
+  project: default
+  sources:
+   - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
+     targetRevision: staging
+     path: app-repo
+     helm:
+       valueFiles:
+         - $values/gitops-repo/environments/staging/values.yaml
+   - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
+     targetRevision: main
+     path: gitops-repo
+     ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging-my-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+        - CreateNamespace=true
+
+    
