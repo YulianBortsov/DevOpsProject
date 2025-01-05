@@ -2,60 +2,72 @@
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #000;
+    color: #fff;
     line-height: 1.6;
     padding: 20px;
+    text-align: center;
 }
 
 /* Header Styling */
 header {
-    text-align: center;
     margin-bottom: 30px;
 }
 
 .main-heading {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #111;
+    color: #fff;
     margin-bottom: 10px;
 }
 
 .subtext {
     font-size: 1rem;
-    color: #555;
+    color: #bbb;
 }
 
 /* Section Styling */
+section {
+    margin-bottom: 40px;
+}
+
+/* Form Section */
 form {
     max-width: 400px;
-    margin: 0 auto 30px;
+    margin: 0 auto;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #111;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
 form label {
     display: block;
     font-size: 0.9rem;
     margin-bottom: 5px;
-    color: #333;
+    color: #ddd;
 }
 
 form input {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #333;
     border-radius: 4px;
+    background-color: #222;
+    color: #fff;
+}
+
+form input::placeholder {
+    color: #777;
 }
 
 form button {
     width: 100%;
     padding: 10px;
-    background-color: #111;
+    background-color: #444;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -64,21 +76,21 @@ form button {
 }
 
 form button:hover {
-    background-color: #444;
+    background-color: #666;
 }
 
 /* Items Section */
 .items-section {
     max-width: 600px;
     margin: 0 auto;
-    text-align: left;
+    text-align: center;
 }
 
 .items-section button {
-    display: block;
+    display: inline-block;
     margin: 10px 0 20px;
-    padding: 10px 15px;
-    background-color: #111;
+    padding: 10px 20px;
+    background-color: #444;
     color: white;
     border: none;
     border-radius: 4px;
@@ -86,12 +98,13 @@ form button:hover {
 }
 
 .items-section button:hover {
-    background-color: #444;
+    background-color: #666;
 }
 
 ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 ul li {
@@ -99,11 +112,11 @@ ul li {
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-radius: 6px;
     margin-bottom: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: #111;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
 ul li button {
@@ -122,7 +135,7 @@ ul li button:hover {
 
 /* Utility Classes */
 .load-items {
-    background-color: #111;
+    background-color: #444;
     color: white;
     border: none;
     border-radius: 4px;
@@ -131,5 +144,5 @@ ul li button:hover {
 }
 
 .load-items:hover {
-    background-color: #444;
+    background-color: #666;
 }
