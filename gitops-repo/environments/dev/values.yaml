@@ -1,7 +1,7 @@
 frontend:
   image:
     repository: yulianbortsov/3tier-front
-    frontTag: 358a22996f01c1f52c16dd01d0744306c1119530
+    frontTag: 229a49f31af70a815121f9f31ef3177c6ba1f9ac
 backend:
   image:
     repository: yulianbortsov/3tier-back
