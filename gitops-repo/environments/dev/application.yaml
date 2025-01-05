@@ -7,7 +7,7 @@ spec:
   project: default
   sources:
    - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
-     targetRevision: main
+     targetRevision: dev
      path: app-repo
      helm:
        valueFiles:
