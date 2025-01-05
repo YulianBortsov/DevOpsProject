@@ -40,6 +40,8 @@ Base.metadata.create_all(engine)
 @app.route('/api/items', methods=['POST'])
 def create_item():
     data = request.json
+    if not data.get('name'):  # Ensure name is provided
+        return jsonify({"message": "Name is required!"}), 400
     try:
         # Create a session
         session = Session()
