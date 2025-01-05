@@ -13,7 +13,7 @@ spec:
        valueFiles:
          - $values/gitops-repo/environments/dev/values.yaml
    - repoURL: https://github.com/YulianBortsov/DevOpsProject.git
-     targetRevision: main
+     targetRevision: dev
      path: gitops-repo
      ref: values
   destination:
