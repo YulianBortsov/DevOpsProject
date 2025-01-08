@@ -19,26 +19,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Get branch name
         id: branch-name
         run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and Tag
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }} \
-          -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest \
-          -f ./app-repo/code/Dockerfile ./app-repo/code
-      - name: Push Image
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest
+        - name: Build and Push
+          uses: docker/build-and-push-action@v5
+          with:
+            context: ./app-repo/code
+            file: ./app-repo/code/Dockerfile
+            push: true
+            tags: |
+              ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
+              ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest
+            cache-from: type=gha
+            cache-to: type=gha, mode=max
+      # - name: Build and Tag
+      #   run: |
+      #     docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }} \
+      #     -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest \
+      #     -f ./app-repo/code/Dockerfile ./app-repo/code
+      # - name: Push Image
+      #   run: |
+      #     docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
+      #     docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest
       - name: Change values file in gitops repo
         run: |
           sed -i "s/backTag: .*/backTag: ${{ github.sha }}/" ./gitops-repo/environments/${{ steps.branch-name.outputs.BRANCH_NAME }}/values.yaml
