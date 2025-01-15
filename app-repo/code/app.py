@@ -3,13 +3,18 @@ from flask_cors import CORS
 from sqlalchemy import create_engine, text, Column, Integer, String
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
+from prometheus_flask_exporter import PrometheusMetrics
 import os
+import time
 
 app = Flask(__name__)
 CORS(app)
 
-# test the CI/CD pipeline
-test = "test1234567"
+# Initialize Prometheus metrics
+metrics = PrometheusMetrics(app)
+
+# Static information as metric
+metrics.info('app_info', 'Application info', version='1.0.0')
 
 # Database configuration from environment variables
 DB_HOST = os.getenv('DATABASE_HOST', 'web-app-application-postgresql')
@@ -25,6 +30,27 @@ engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
+# Custom metrics
+from prometheus_client import Counter, Histogram, Gauge
+
+# Counter metrics
+items_created = Counter('items_created_total', 'Total number of items created')
+items_deleted = Counter('items_deleted_total', 'Total number of items deleted')
+items_updated = Counter('items_updated_total', 'Total number of items updated')
+db_errors = Counter('db_errors_total', 'Total number of database errors', ['operation'])
+
+# Histogram metrics
+db_operation_duration = Histogram(
+    'db_operation_duration_seconds', 
+    'Time spent executing database operations',
+    ['operation'],
+    buckets=[0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+)
+
+# Gauge metrics
+db_connection_status = Gauge('db_connection_status', 'Database connection status (1=up, 0=down)')
+active_sessions = Gauge('db_active_sessions', 'Number of active database sessions')
+
 # Model definition
 class Item(Base):
     __tablename__ = 'items'
@@ -35,126 +61,161 @@ class Item(Base):
 # Ensure the database has the table
 Base.metadata.create_all(engine)
 
-# Added basic CRUD routes
-# POST on /items
 @app.route('/api/items', methods=['POST'])
+@metrics.counter('items_created_count', 'Number of items created')
 def create_item():
     data = request.json
-    if not data.get('name'):  # Ensure name is provided
+    if not data.get('name'):
         return jsonify({"message": "Name is required!"}), 400
     try:
-        # Create a session
-        session = Session()
-
-        # Create a new item
-        new_item = Item(name=data['name'], description=data.get('description'))
+        with db_operation_duration.labels('create').time():
+            session = Session()
+            active_sessions.inc()
+            
+            new_item = Item(name=data['name'], description=data.get('description'))
+            session.add(new_item)
+            session.commit()
+            
+            item_id = new_item.id
+            item_name = new_item.name
+            
+            session.close()
+            active_sessions.dec()
         
-        # Add the new item to the session
-        session.add(new_item)
-        session.commit()
-        
-        # Access attributes before closing the session
-        item_id = new_item.id
-        item_name = new_item.name
-
-        # Close the session
-        session.close()
-
-        # Return the response
+        items_created.inc()
         return jsonify({'message': 'Item created successfully!', 'item': {'id': item_id, 'name': item_name}}), 201
+    
     except SQLAlchemyError as e:
-        # Handle any database errors
+        db_errors.labels('create').inc()
+        if 'session' in locals():
+            session.close()
+            active_sessions.dec()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# GET on /items
 @app.route('/api/items', methods=['GET'])
+@metrics.counter('items_list_count', 'Number of times items list was requested')
 def get_items():
     try:
-        # Create a session
-        session = Session()
-
-        # Retrieve all items from the database
-        items = session.query(Item).all()
-
-        # Close the session
-        session.close()
-
-        # Return the list of items
-        return jsonify([{'id': item.id, 'name': item.name, 'description': item.description} for item in items])
+        with db_operation_duration.labels('read').time():
+            session = Session()
+            active_sessions.inc()
+            
+            items = session.query(Item).all()
+            result = [{'id': item.id, 'name': item.name, 'description': item.description} for item in items]
+            
+            session.close()
+            active_sessions.dec()
+            
+        return jsonify(result)
+    
     except SQLAlchemyError as e:
-        # Handle any database errors
+        db_errors.labels('read').inc()
+        if 'session' in locals():
+            session.close()
+            active_sessions.dec()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# PUT on /items/<item_id>
 @app.route('/api/items/<int:item_id>', methods=['PUT'])
+@metrics.counter('items_updated_count', 'Number of items updated')
 def update_item(item_id):
     data = request.json
     try:
-        # Create a session
-        session = Session()
-
-        # Find the item by ID
-        item = session.query(Item).get(item_id)
-        if not item:
-            return jsonify({'message': 'Item not found!'}), 404
+        with db_operation_duration.labels('update').time():
+            session = Session()
+            active_sessions.inc()
+            
+            item = session.query(Item).get(item_id)
+            if not item:
+                session.close()
+                active_sessions.dec()
+                return jsonify({'message': 'Item not found!'}), 404
+            
+            item.name = data['name']
+            item.description = data.get('description', item.description)
+            session.commit()
+            
+            updated_name = item.name
+            session.close()
+            active_sessions.dec()
         
-        # Update the item properties
-        item.name = data['name']
-        item.description = data.get('description', item.description)
-        
-        # Commit the changes to the database
-        session.commit()
-
-        # Access attributes before closing the session
-        updated_name = item.name
-
-        # Close the session
-        session.close()
-
-        return jsonify({'message': 'Item updated successfully!', 'item': {'id': item.id, 'name': updated_name}})
-
+        items_updated.inc()
+        return jsonify({'message': 'Item updated successfully!', 'item': {'id': item_id, 'name': updated_name}})
+    
     except SQLAlchemyError as e:
-        # Handle any database errors
+        db_errors.labels('update').inc()
+        if 'session' in locals():
+            session.close()
+            active_sessions.dec()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# DELETE on /items/<item_id>
 @app.route('/api/items/<int:item_id>', methods=['DELETE'])
+@metrics.counter('items_deleted_count', 'Number of items deleted')
 def delete_item(item_id):
     try:
-        # Create a session
-        session = Session()
-
-        # Find the item by ID
-        item = session.query(Item).get(item_id)
-        if not item:
-            return jsonify({'message': 'Item not found!'}), 404
+        with db_operation_duration.labels('delete').time():
+            session = Session()
+            active_sessions.inc()
+            
+            item = session.query(Item).get(item_id)
+            if not item:
+                session.close()
+                active_sessions.dec()
+                return jsonify({'message': 'Item not found!'}), 404
+            
+            session.delete(item)
+            session.commit()
+            
+            session.close()
+            active_sessions.dec()
         
-        # Delete the item
-        session.delete(item)
-        session.commit()
-
-        # Close the session
-        session.close()
-
+        items_deleted.inc()
         return jsonify({'message': 'Item deleted successfully!'})
     
     except SQLAlchemyError as e:
-        # Handle any database errors
+        db_errors.labels('delete').inc()
+        if 'session' in locals():
+            session.close()
+            active_sessions.dec()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Route to check the database connection
 @app.route('/api')
+@metrics.do_not_track()
 def check_db_connection():
     try:
-        # Test connection by executing a simple query
+        start_time = time.time()
         with engine.connect() as connection:
             result = connection.execute(text('SELECT 1;'))
             for _ in result:
-                pass  # Just to fetch the result
-        return jsonify({'status': 'success', 'message': 'Database connection is healthy!'})
+                pass
+        
+        db_connection_status.set(1)
+        latency = time.time() - start_time
+        db_operation_duration.labels('connection_check').observe(latency)
+        
+        return jsonify({
+            'status': 'success', 
+            'message': 'Database connection is healthy!',
+            'latency': f'{latency:.3f} seconds'
+        })
+    
     except SQLAlchemyError as e:
-        # Return error message if the connection fails
+        db_connection_status.set(0)
+        db_errors.labels('connection_check').inc()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+# Health check endpoint
+@app.route('/health')
+@metrics.do_not_track()
+def health_check():
+    try:
+        # Quick DB connection check
+        with engine.connect() as connection:
+            connection.execute(text('SELECT 1;')).fetchone()
+        return jsonify({'status': 'healthy', 'database': 'connected'})
+    except SQLAlchemyError:
+        return jsonify({'status': 'unhealthy', 'database': 'disconnected'}), 503
+
 if __name__ == '__main__':
+    # Ensure metrics are initialized before running the app
+    metrics.init_app(app)
     app.run(host='0.0.0.0', port=5000)
