@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: {{ .Values.env }}-{{ .Release.Name }}-backend
   endpoints:
-    - targetPort: 5000
+    - targetPort: {{ .Values.backend.service.port }}
       path: /metrics
       interval: 30s
   namespaceSelector:
