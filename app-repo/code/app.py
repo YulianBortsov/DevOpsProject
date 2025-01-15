@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize Prometheus metrics
-metrics = PrometheusMetrics(app)
+metrics = PrometheusMetrics(app, path='/metrics')
 
 # Static information as metric
 metrics.info('app_info', 'Application info', version='1.0.0')
@@ -204,7 +204,7 @@ def check_db_connection():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # Health check endpoint
-@app.route('/health')
+@app.route('/api/health')
 @metrics.do_not_track()
 def health_check():
     try:
@@ -216,6 +216,4 @@ def health_check():
         return jsonify({'status': 'unhealthy', 'database': 'disconnected'}), 503
 
 if __name__ == '__main__':
-    # Ensure metrics are initialized before running the app
-    metrics.init_app(app)
     app.run(host='0.0.0.0', port=5000)
