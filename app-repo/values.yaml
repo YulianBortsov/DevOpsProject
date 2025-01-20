@@ -26,9 +26,6 @@ backend:
   service:
     type: ClusterIP
     port: 5000
-  env:
-    DATABASE_USER: user
-    DATABASE_NAME: app_db
   livenessProbe:
     httpGet:
       path: /api
@@ -43,6 +40,15 @@ backend:
     initialDelaySeconds: 7
     periodSeconds: 10
 
+rds:
+  remoteRefKey: dev-DevOpsProject/rds-credentials
+  secretName: rds-credentials
+  secretKeys:
+    host: host
+    port: port
+    dbname: dbname
+    username: username
+    password: password
 
 global:
   defaultStorageClass: gp2  

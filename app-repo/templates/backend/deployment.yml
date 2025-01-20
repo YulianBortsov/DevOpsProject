@@ -27,31 +27,33 @@ spec:
           readinessProbe:
             {{- toYaml .Values.backend.readinessProbe | nindent 12 }}
           env:
+          {{- with .Values.rds }}
             - name: RDS_HOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-credentials
-                  key: host
+                  name: {{ .secretName }}
+                  key: {{ .secretKeys.host }}
             - name: RDS_PORT
               valueFrom:
                 secretKeyRef:
-                  name: rds-credentials
-                  key: port
+                  name: {{ .secretName }}
+                  key: {{ .secretKeys.port }}
             - name: RDS_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-credentials
-                  key: dbname
+                  name: {{ .secretName }}
+                  key: {{ .secretKeys.dbname }}
             - name: RDS_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-credentials
-                  key: username
+                  name: {{ .secretName }}
+                  key: {{ .secretKeys.username }}
             - name: RDS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: rds-credentials
-                  key: password
+                  name: {{ .secretName }}
+                  key: {{ .secretKeys.password }}
+          {{- end }}
             # - name: DATABASE_HOST
             #   value: {{ .Release.Name }}-postgresql
             # - name: DATABASE_USER
