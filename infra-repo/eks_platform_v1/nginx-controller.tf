@@ -42,12 +42,6 @@ resource "null_resource" "wait_for_aws_lb_controller" {
         --selector app.kubernetes.io/name=aws-load-balancer-controller \
         --timeout=300s
       
-      echo "Waiting for AWS Load Balancer webhook..."
-      until kubectl get validatingwebhookconfigurations aws-load-balancer-webhook; do
-        echo "Webhook not ready yet..."
-        sleep 10
-      done
-      
       # Additional wait to ensure everything is fully operational
       sleep 30
     EOT

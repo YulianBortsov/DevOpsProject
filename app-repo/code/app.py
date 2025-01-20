@@ -17,16 +17,38 @@ metrics = PrometheusMetrics(app, path='/metrics')
 metrics.info('app_info', 'Application info', version='1.0.0')
 
 # Database configuration from environment variables
-DB_HOST = os.getenv('DATABASE_HOST', 'web-app-application-postgresql')
-DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
-DB_USER = os.getenv('DATABASE_USER', 'postgres')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'password')
+DB_HOST = os.getenv('RDS_HOSTNAME')  # RDS endpoint
+DB_PORT = os.getenv('RDS_PORT', '5432')  # RDS port
+DB_NAME = os.getenv('RDS_DB_NAME', 'postgres')
+DB_USER = os.getenv('RDS_USERNAME')
+DB_PASSWORD = os.getenv('RDS_PASSWORD')
 
-# SQLAlchemy database URI
-DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+# SQLAlchemy database URI for RDS
+DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-# SQLAlchemy engine
-engine = create_engine(DATABASE_URI)
+# Configure the connection pool
+engine = create_engine(
+    DATABASE_URI,
+    pool_size=5,  # Maximum number of permanent connections
+    max_overflow=10,  # Maximum number of additional connections when pool_size is reached
+    pool_timeout=30,  # Timeout in seconds for getting a connection from the pool
+    pool_recycle=3600,  # Recycle connections after 1 hour to handle RDS connection timeouts
+    connect_args={
+        'connect_timeout': 10  # Connection timeout in seconds
+    }
+)
+
+# # Database configuration from environment variables
+# DB_HOST = os.getenv('DATABASE_HOST', 'web-app-application-postgresql')
+# DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
+# DB_USER = os.getenv('DATABASE_USER', 'postgres')
+# DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'password')
+
+# # SQLAlchemy database URI
+# DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+
+# # SQLAlchemy engine
+# engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 

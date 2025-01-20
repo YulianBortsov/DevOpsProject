@@ -32,6 +32,7 @@ module "platform_v1" {
   project_name       = "DevOpsProject"
   environment        = "dev"
   vpc_cidr           = "10.0.0.0/16"
+  db_name            = "taskManagerDB"
   enable_nat_gateway = true
   single_nat_gateway = true
   enable_karpenter   = true

@@ -53,3 +53,6 @@ variable "eks_managed_node_groups" {
   type        = any
   default     = {}
 }
+variable "db_name" {
+  type = string
+}
