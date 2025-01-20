@@ -53,18 +53,6 @@ rds:
 global:
   defaultStorageClass: gp2  
 
-postgresql:
-  auth:
-    username: user
-    database: app_db
-    existingSecret: postgres-pass
-    secretKeys:
-      userPasswordKey: db-pass
-      adminPasswordKey: db-admin-pass
-  primary:
-    persistence:
-      enabled: true
-      size: 1Gi
 
 secretStore:
   remoteRefKey: 3tier/postgresql
