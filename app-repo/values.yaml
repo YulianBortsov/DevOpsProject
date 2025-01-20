@@ -13,14 +13,7 @@ frontend:
   ingress:
     enabled: True
     host: app.ybort.shop
-  staticcmName: frontend-static-files
-  volumes:
-    - name: frontend-static-files
-      configMap:
-        name: frontend-static-files
-  volumeMounts:
-    - name: frontend-static-files
-      mountPath: /usr/share/nginx/html
+
 
 
 
@@ -49,22 +42,7 @@ backend:
       port: 5000
     initialDelaySeconds: 7
     periodSeconds: 10
-  appcmName: app-cm-backend
-  requirementscmName: requirements-cm-backend
-  volumes:
-    - name: app-cm-backend
-      configMap:
-        name: app-cm-backend
-    - name: requirements-cm-backend
-      configMap:
-        name: requirements-cm-backend
-  volumeMounts:
-    - name: app-cm-backend
-      mountPath: /app/app.py
-      subPath: app.py
-    - name: requirements-cm-backend
-      mountPath: /app/requirements.txt
-      subPath: requirements.txt
+
 
 global:
   defaultStorageClass: gp2  
