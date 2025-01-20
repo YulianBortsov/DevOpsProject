@@ -30,27 +30,27 @@ spec:
             - name: RDS_HOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-es
+                  name: rds-credentials
                   key: host
             - name: RDS_PORT
               valueFrom:
                 secretKeyRef:
-                  name: rds-es
+                  name: rds-credentials
                   key: port
             - name: RDS_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-es
+                  name: rds-credentials
                   key: dbname
             - name: RDS_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: rds-es
+                  name: rds-credentials
                   key: username
             - name: RDS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: rds-es
+                  name: rds-credentials
                   key: password
             # - name: DATABASE_HOST
             #   value: {{ .Release.Name }}-postgresql
