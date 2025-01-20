@@ -54,14 +54,4 @@ spec:
                   name: {{ .secretName }}
                   key: {{ .secretKeys.password }}
           {{- end }}
-            # - name: DATABASE_HOST
-            #   value: {{ .Release.Name }}-postgresql
-            # - name: DATABASE_USER
-            #   value: {{ .Values.backend.env.DATABASE_USER | quote }}
-            # - name: DATABASE_PASSWORD
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: {{ .Values.postgresql.auth.existingSecret }}
-            #       key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
-            # - name: DATABASE_NAME
-            #   value: {{ .Values.backend.env.DATABASE_NAME | quote }}
+
