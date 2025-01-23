@@ -41,8 +41,8 @@ backend:
     periodSeconds: 10
 
 rds:
-  remoteRefKey: dev-DevOpsProject/rds-credentials
-  secretName: rds-credentials
+  remoteRefKey: dev-DevOpsProject/rds-cred
+  secretName: rds-credtials
   secretKeys:
     host: host
     port: port
