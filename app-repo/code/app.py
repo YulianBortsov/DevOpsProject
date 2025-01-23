@@ -10,6 +10,8 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+test = "test"
+
 # Initialize Prometheus metrics
 metrics = PrometheusMetrics(app, path='/metrics')
 
