@@ -5,6 +5,6 @@ frontend:
 backend:
   image:
     repository: yulianbortsov/3tier-back
-    backTag: 98a6cae673355c94d41736393564e136274a9a44
+    backTag: 0fd2a072ea26cb239d2b8aa252342fa296e49f29
 
 env: dev
