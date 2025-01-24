@@ -1,5 +1,5 @@
 # Default values for 3tier-app.
-
+domain_name: ybort.shop
 env: dev
 frontend:
   image:
@@ -12,7 +12,7 @@ frontend:
     port: 80
   ingress:
     enabled: True
-    host: app.dev.ybort.shop
+
 
 
 
