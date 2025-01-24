@@ -53,9 +53,3 @@ rds:
 global:
   defaultStorageClass: gp2  
 
-
-secretStore:
-  remoteRefKey: 3tier/postgresql
-  remoteRefProperty: 3tier-app-postgres-pass
-  remoteRefPropertyAdmin: 3tier-app-postgres-admin-pass
-  region: us-east-1  

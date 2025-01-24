@@ -8,3 +8,6 @@ backend:
     backTag: 0fd2a072ea26cb239d2b8aa252342fa296e49f29
 
 env: dev
+
+rds:
+  remoteRefKey: dev-DevOpsProject/rds-credential
