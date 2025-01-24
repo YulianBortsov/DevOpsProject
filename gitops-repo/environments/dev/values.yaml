@@ -11,4 +11,6 @@ env: dev
 
 rds:
   remoteRefKey: dev-DevOpsProject/rds-credential
- region: us-east-1
+
+  
+region: us-east-1
