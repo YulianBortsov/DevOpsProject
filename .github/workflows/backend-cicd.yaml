@@ -9,10 +9,10 @@ on:
     paths:
       - 'app-repo/code/app.py'
 
-  workflow_run:
-    workflows: ["Build new frontend image and Deploy"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build new frontend image and Deploy"]
+  #   types:
+  #     - completed
 
 jobs:
   build:
@@ -30,17 +30,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        # - name: Build and Push
-        #   uses: docker/build-and-push-action@v5
-        #   with:
-        #     context: ./app-repo/code
-        #     file: ./app-repo/code/Dockerfile
-        #     push: true
-        #     tags: |
-        #       ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }}
-        #       ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ steps.branch-name.outputs.BRANCH_NAME }}-latest
-        #     cache-from: type=gha
-        #     cache-to: type=gha, mode=max
       - name: Build and Tag
         run: |
           docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.BACKEND_IMAGE }}:${{ github.sha }} \
