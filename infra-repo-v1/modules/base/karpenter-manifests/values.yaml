@@ -1,0 +1,35 @@
+ecn2:
+  amiAlias: bottlerocket@latest
+  roleName: karpenter-ec2-role
+  karpenterValue: local-name
+  
+nodepool:
+  instance_category:
+    operator: In
+    values: ["t"]
+  instance_cpu:
+    operator: In
+    values: ["2", "4"]
+  instance_hypervisor:
+    operator: In
+    values: ["nitro"]
+  instance_generation:
+    operator: Gt
+    values: ["2"]
+  instance_size:
+    operator: NotIn
+    values: ["nano", "micro", "small"]
+  capacity_type:
+    operator: In
+    values: ["on-demand"]
+
+  cpu: 200
+  memory: 
+  enbale_disruption: true
+  tainted: true
+  taints:
+    key: aws-lbc-load
+  labeled: true
+  labels:
+    key: workload-type
+    value: "critical"

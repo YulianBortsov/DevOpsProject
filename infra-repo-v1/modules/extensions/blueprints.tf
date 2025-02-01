@@ -40,9 +40,8 @@ module "eks_blueprints_addons_lbc" {
       nodeSelector:
         workload-type: critical
       tolerations:
-        - key: "workload-type"
-          values: "critical"
-          effect: "NoSchedule"
+        - key: aws-lbc
+          effect: NoSchedule
     EOF
     ]
   } : null

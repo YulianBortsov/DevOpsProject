@@ -4,14 +4,15 @@ data "aws_route53_zone" "zone" {
 module "acm" {
   source                    = "terraform-aws-modules/acm/aws"
   version                   = "~> 4.0"
-  domain_name               = var.domain_name
+  # domain_name               = var.domain_name
+  domain_name = "*.${var.environment}.${var.domain_name}"
   zone_id                   = data.aws_route53_zone.zone.zone_id
   validation_method         = "DNS"
-  subject_alternative_names = ["*.${var.environment}.${var.domain_name}"]
+  # subject_alternative_names = ["*.${var.environment}.${var.domain_name}"]
   wait_for_validation       = true
 }
 data "aws_acm_certificate" "cert" {
-  domain     = var.domain_name
+  domain     = "*.${var.environment}.${var.domain_name}"
   statuses   = ["ISSUED"]
   depends_on = [module.acm]
 }

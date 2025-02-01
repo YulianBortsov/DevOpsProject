@@ -1,0 +1,16 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: "{{ .Release.Name }}-ec2nc"
+spec:
+  amiSelectorTerms:
+    - alias: {{ .Values.ecn2.amiAlias }}
+  role: {{ .Values.ecn2.roleName }}
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.ecn2.karpenterValue }}
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: {{ .Values.ecn2.karpenterValue }}
+  tags:
+    karpenter.sh/discovery: {{ .Values.ecn2.karpenterValue }}

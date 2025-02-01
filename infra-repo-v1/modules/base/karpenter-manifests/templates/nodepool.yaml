@@ -1,0 +1,53 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: {{ .Release.Name }}-nodepool
+spec:
+  template:
+    {{- if .Values.nodepool.labeled }}
+    metadata:
+      labels:
+        {{ .Values.nodepool.labels.key }}: {{ .Values.nodepool.labels.value }}
+    {{- end }}
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: {{ .Release.Name }}-ec2nc
+      {{- if .Values.nodepool.tainted }}      
+      taints:
+        - key: {{ .Values.nodepool.taints.key }}
+          effect: NoSchedule
+      {{- end }}
+      requirements:
+        - key: "karpenter.sh/capacity-type"
+          operator: {{ .Values.nodepool.capacity_type.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.capacity_type.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "karpenter.k8s.aws/instance-category"
+          operator: {{ .Values.nodepool.instance_category.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.instance_category.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "karpenter.k8s.aws/instance-cpu"
+          operator: {{ .Values.nodepool.instance_cpu.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.instance_cpu.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "karpenter.k8s.aws/instance-hypervisor"
+          operator: {{ .Values.nodepool.instance_hypervisor.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.instance_hypervisor.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "karpenter.k8s.aws/instance-generation"
+          operator: {{ .Values.nodepool.instance_generation.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.instance_generation.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "karpenter.k8s.aws/instance-size"  # Add this to explicitly exclude nano
+          operator: {{ .Values.nodepool.instance_size.operator }}
+          values: [{{- range $index, $value := .Values.nodepool.instance_size.values}}{{ if $index }}, {{ end }}"{{ $value }}"{{- end }}]
+        - key: "kubernetes.io/arch"
+          operator: In
+          values: ["amd64"]
+
+        
+  limits:
+    cpu: {{ .Values.nodepool.cpu }}
+    memory: {{ .Values.nodepool.memory}}
+  {{ if .Values.nodepool.enable_disruption }}
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 15s
+  {{ end }}
