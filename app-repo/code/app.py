@@ -10,7 +10,8 @@ import time
 app = Flask(__name__)
 CORS(app)
 
-
+# Test the backend workflow by setting this test variable
+test = 'test'
 
 # Initialize Prometheus metrics
 metrics = PrometheusMetrics(app, path='/metrics')
