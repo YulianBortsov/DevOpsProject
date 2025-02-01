@@ -15,7 +15,7 @@ spec:
         app: {{ .Values.env }}-{{ .Release.Name }}-frontend
     spec:
       nodeSelector:
-        karpenter.sh/nodepool: default
+        karpenter.sh/nodepool: default-nodepool
       containers:
         - name: frontend
           image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.frontTag }}
