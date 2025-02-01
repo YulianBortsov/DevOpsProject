@@ -10,7 +10,7 @@ backend:
 env: dev
 
 rds:
-  remoteRefKey: dev-DevOpsProject/rds-credentias123456
+  remoteRefKey: dev-DevOpsProject/rds-credentials123456
 
   
 region: us-east-1
